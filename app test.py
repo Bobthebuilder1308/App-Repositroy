@@ -222,7 +222,7 @@ def class_timetable_page():
 
     tk.Label(class_timetable_window, text="Class Timetable", font=("Arial", 18), bg=bright_bg_color).pack(pady=10)
 
-    # ... (add widgets for class timetable, and a button to save)
+    # (add widgets for class timetable, and a button to save)
 
     save_button = tk.Button(class_timetable_window, text="Save Timetable", command=save_class_timetable,
                             bg="#008000", fg="white", font=("Arial", 16))
