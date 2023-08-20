@@ -2,93 +2,87 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox
 import json
 
-# main window
+# Create the main window
 window = tk.Tk()
 window.title("Teacher & Student Dashboard")
 window.geometry("800x600")
 
-neon_bg_color = "#33A1C9"
+# Bright background color Hopefully
+bright_bg_color = "#FFFF99"
 
-window.configure(bg=neon_bg_color)
+#background color for the main window
+window.configure(bg="#FFFF33")
 
-# Initialize the student and teacher data lists
-student_data_list = []
-teacher_data_list = []
+# Initialize the create_class_button
+create_class_button = None
 
-# Function to handle the sign-up process
-def sign_up_page():
-    def save_teacher_data():
-        # Save teacher data to the list
-        teacher_data = {
-            "name": name_entry.get(),
-            "email": email_entry.get(),
-            "password": password_entry.get(),
-            "class": class_entry.get(),
-            "section": section_entry.get()
-        }
-        teacher_data_list.append(teacher_data)
-        messagebox.showinfo("Successful Sign Up", "You will soon be able to use this feature!")
+# Predefined login credentials
+predefined_credentials = {
+    "John": {"class": "11", "section": "A", "password": "123"},
+    "Jane": {"class": "10", "section": "B", "password": "456"}
+}
 
-    sign_up_window = tk.Toplevel(window)
-    sign_up_window.title("Sign Up")
-    sign_up_window.geometry("400x400")
-    sign_up_window.grab_set()
+# Function to show teacher or student options
+def show_teacher_student_options():
+    def on_teacher():
+        teacher_account_creation()
 
-    tk.Label(sign_up_window, text="Sign Up", font=("Arial", 18)).pack(pady=10)
+    def on_student():
+        # Implement student sign-up here
+        pass
 
-    tk.Label(sign_up_window, text="Name:").pack()
-    name_entry = tk.Entry(sign_up_window)
-    name_entry.pack()
+    custom_dialog = tk.Toplevel(window)
+    custom_dialog.title("Sign Up Options")
+    custom_dialog.geometry("400x200")
+    custom_dialog.grab_set()
 
-    tk.Label(sign_up_window, text="Email:").pack()
-    email_entry = tk.Entry(sign_up_window)
-    email_entry.pack()
+    teacher_button = tk.Button(custom_dialog, text="Teacher", command=on_teacher,
+                               bg="lime green", fg="white", font=("Arial", 16))
+    teacher_button.pack(pady=20)
 
-    tk.Label(sign_up_window, text="Password:").pack()
-    password_entry = tk.Entry(sign_up_window, show="*")
-    password_entry.pack()
+    student_button = tk.Button(custom_dialog, text="Student", command=on_student,
+                               bg="deep sky blue", fg="white", font=("Arial", 16))
+    student_button.pack()
 
-    tk.Label(sign_up_window, text="Class:").pack()
-    class_entry = tk.Entry(sign_up_window)
-    class_entry.pack()
+# Create the Sign Up button
+button_signup = tk.Button(window, text="Sign Up", command=show_teacher_student_options,
+                          bg="lime green", fg="white", font=("Arial", 24))
+button_signup.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
-    tk.Label(sign_up_window, text="Section:").pack()
-    section_entry = tk.Entry(sign_up_window)
-    section_entry.pack()
+# Create the Login button
+button_login = tk.Button(window, text="Login", command=lambda: login_page(),
+                         bg="deep sky blue", fg="white", font=("Arial", 24))
+button_login.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
 
-    # Teacher sign up button
-    teacher_sign_up_button = tk.Button(sign_up_window, text="Sign Up as Teacher", command=save_teacher_data,
-                                       bg="deep sky blue", fg="white", font=("Arial", 16))
-    teacher_sign_up_button.pack(pady=20)
-
-# Function to handle the login process
+# Function for the login page
 def login_page():
-    def perform_login():
-        username = username_entry.get()
-        password = password_entry.get()
+    def login_check():
+        # Implement login check based on name, class, sec, and password
+        name = name_entry.get()
         class_ = class_entry.get()
-        section = section_entry.get()
+        sec = sec_entry.get()
+        password = password_entry.get()
 
-        # P Check if the username, password, class, and section match for teachers
-        for teacher in teacher_data_list:
-            if (username == teacher["name"] and password == teacher["password"] and
-                    class_ == teacher["class"] and section == teacher["section"]):
-                login_window.destroy()
-                show_teacher_dashboard()
-                return
+        # Check if the name exists in predefined_credentials
+        if name in predefined_credentials:
+            # Get the predefined credentials for the name
+            predefined_data = predefined_credentials[name]
+            
+            # Check if the provided class, section, and password match
+            if (class_ == predefined_data["class"] and
+                sec == predefined_data["section"] and
+                password == predefined_data["password"]):
 
-        # Placeholder: Check if the username, password, class, and section match for students
-        for student in student_data_list:
-            if (username == student["student_name"] and password == "123" and
-                    class_ == student["class"] and section == student["section"]):
-                login_window.destroy()
-                show_student_dashboard()
-                return
+                # Login successful, navigate to the main page
+                messagebox.showinfo("Login", "Login successful! You are now on the main page.")
+                main_page()
+            else:
+                # Login failed, show an error message
+                messagebox.showerror("Login Failed", "Invalid credentials. Please try again.")
+        else:
+            # Name not found, show an error message
+            messagebox.showerror("Login Failed", "User not found. Please try again.")
 
-        # Invalid login
-        messagebox.showerror("Login Failed", "Invalid credentials or class/section")
-
-    global login_window
     login_window = tk.Toplevel(window)
     login_window.title("Login")
     login_window.geometry("400x400")
@@ -96,121 +90,143 @@ def login_page():
 
     tk.Label(login_window, text="Login", font=("Arial", 18)).pack(pady=10)
 
-    tk.Label(login_window, text="Username:").pack()
-    username_entry = tk.Entry(login_window)
-    username_entry.pack()
-
-    tk.Label(login_window, text="Password:").pack()
-    password_entry = tk.Entry(login_window, show="*")
-    password_entry.pack()
+    tk.Label(login_window, text="Name:").pack()
+    name_entry = tk.Entry(login_window)
+    name_entry.pack()
 
     tk.Label(login_window, text="Class:").pack()
     class_entry = tk.Entry(login_window)
     class_entry.pack()
 
     tk.Label(login_window, text="Section:").pack()
-    section_entry = tk.Entry(login_window)
-    section_entry.pack()
+    sec_entry = tk.Entry(login_window)
+    sec_entry.pack()
 
-    login_button = tk.Button(login_window, text="Login", command=perform_login,
-                             bg="green", fg="white", font=("Arial", 16))
+    tk.Label(login_window, text="Password:").pack()
+    password_entry = tk.Entry(login_window, show="*")
+    password_entry.pack()
+
+    login_button = tk.Button(login_window, text="Login", command=login_check,
+                             bg="#FF0000", fg="white", font=("Arial", 16))
     login_button.pack(pady=20)
 
-# Show the teacher dashboard
-def show_teacher_dashboard():
-    # Enable teacher-specific features
-    add_students_button.config(state=tk.NORMAL)
-    attendance_button.config(state=tk.NORMAL)
-
-# Show the student dashboard
-def show_student_dashboard():
-    # Enable student-specific features
-    my_timetable_button.config(state=tk.NORMAL)
-    class_timetable_button.config(state=tk.NORMAL)
-    check_grades_button.config(state=tk.NORMAL)
-    announcements_button.config(state=tk.NORMAL)
-
-# Sign Up and Login Buttons
-sign_up_button = tk.Button(window, text="Sign Up", command=sign_up_page,
-                           bg="purple", fg="white", font=("Arial", 16))
-sign_up_button.pack(pady=20)
-
-login_button = tk.Button(window, text="Login", command=login_page,
-                         bg="green", fg="white", font=("Arial", 16))
-login_button.pack(pady=20)
-
-# Function to show the main dashboard for teachers
-def show_teacher_dashboard():
+# Function for Main Page (after login)
+def main_page():
     main_window = tk.Toplevel(window)
-    main_window.title("Teacher Dashboard")
+    main_window.title("Main Page")
     main_window.geometry("800x600")
-    main_window.configure(bg=neon_bg_color)
+    main_window.configure(bg=bright_bg_color)
+    main_window.grab_set()
 
-    tk.Label(main_window, text="Welcome, Teacher!", font=("Arial", 18), bg=neon_bg_color).pack(pady=10)
+    tk.Label(main_window, text="Main Page", font=("Arial", 18), bg=bright_bg_color).pack(pady=10)
 
-    # Buttons for teacher-specific features
-    add_students_button = tk.Button(main_window, text="Add Students", command=add_students_page,
-                                    bg="purple", fg="white", font=("Arial", 16))
-    add_students_button.pack(pady=20)
+    my_class_button = tk.Button(main_window, text="My Class", command=add_students_page,
+                                bg="lime green", fg="white", font=("Arial", 24))
+    my_class_button.place(relx=0.2, rely=0.3, anchor=tk.CENTER)
 
-    attendance_button = tk.Button(main_window, text="Attendance", command=attendance_page,
-                                  bg="green", fg="white", font=("Arial", 16))
-    attendance_button.pack(pady=20)
+    class_timetable_button = tk.Button(main_window, text="Class Timetable", command=class_timetable_page,
+                                      bg="lime green", fg="white", font=("Arial", 24))
+    class_timetable_button.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
 
-# Function to show the main dashboard for students
-def show_student_dashboard():
-    main_window = tk.Toplevel(window)
-    main_window.title("Student Dashboard")
-    main_window.geometry("800x600")
-    main_window.configure(bg=neon_bg_color)
+    my_timetable_button = tk.Button(main_window, text="My Timetable", command=lambda: messagebox.showinfo("Work in Progress", "Feature coming soon."),
+                                    bg="deep sky blue", fg="white", font=("Arial", 24))
+    my_timetable_button.place(relx=0.2, rely=0.5, anchor=tk.CENTER)
 
-    tk.Label(main_window, text="Welcome, Student!", font=("Arial", 18), bg=neon_bg_color).pack(pady=10)
+    create_test_button = tk.Button(main_window, text="Create Test", command=lambda: messagebox.showinfo("Work in Progress", "Feature coming soon."),
+                                   bg="deep sky blue", fg="white", font=("Arial", 24))
+    create_test_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-    # Buttons for student-specific features
-    my_timetable_button = tk.Button(main_window, text="My Timetable", command=lambda: messagebox.showinfo("My Timetable", "Your timetable will be available soon."),
-                                    bg="purple", fg="white", font=("Arial", 16))
-    my_timetable_button.pack(pady=20)
+    check_grade_button = tk.Button(main_window, text="Check Student Grade", command=lambda: messagebox.showinfo("Work in Progress", "Feature coming soon."),
+                                   bg="deep sky blue", fg="white", font=("Arial", 24))
+    check_grade_button.place(relx=0.2, rely=0.7, anchor=tk.CENTER)
 
-    class_timetable_button = tk.Button(main_window, text="Class Timetable", command=lambda: messagebox.showinfo("Class Timetable", "Class timetable will be available soon."),
-                                       bg="green", fg="white", font=("Arial", 16))
-    class_timetable_button.pack(pady=20)
+# Function for Add Students Page
+def add_students_page():
+    def save_student_data():
+        student_data = {
+            "student_name": student_name_entry.get(),
+            "father_name": father_name_entry.get(),
+            "mother_name": mother_name_entry.get(),
+            "dob": dob_entry.get(),
+            "blood_group": blood_group_entry.get(),
+            "gender": gender_entry.get(),
+            "roll_no": roll_no_entry.get(),
+            "class": class_entry.get(),
+            "section": section_entry.get(),
+        }
+        # Save student data to a file or database
+        with open("student_data.json", "a") as file:
+            json.dump(student_data, file)
+            file.write("\n")
+        messagebox.showinfo("Student Added", "Student data saved successfully!")
 
-    check_grades_button = tk.Button(main_window, text="Check Student Grades", command=lambda: messagebox.showinfo("Check Student Grades", "Check grades here."),
-                                    bg="purple", fg="white", font=("Arial", 16))
-    check_grades_button.pack(pady=20)
+    add_students_window = tk.Toplevel(window)
+    add_students_window.title("Add Students")
+    add_students_window.geometry("400x600")
+    add_students_window.configure(bg=bright_bg_color)
+    add_students_window.grab_set()
 
-    announcements_button = tk.Button(main_window, text="Announcements", command=lambda: messagebox.showinfo("Announcements", "No announcements at the moment."),
-                                     bg="green", fg="white", font=("Arial", 16))
-    announcements_button.pack(pady=20)
-student_data_list.append({
-    "student_name": "Joey", "father_name": "Joey Sr.", "mother_name": "Gloria",
-    "dob": "1971-05-11", "blood_group": "B+", "gender": "Male", "roll_no": "202", "class": "11", "section": "A",
-    "attendance": "Present"
-})
+    tk.Label(add_students_window, text="Add Students", font=("Arial", 18), bg=bright_bg_color).pack(pady=10)
 
-student_data_list.append({
-    "student_name": "Harry", "father_name": "James", "mother_name": "Lily",
-    "dob": "1980-07-31", "blood_group": "A+", "gender": "Male", "roll_no": "203", "class": "11", "section": "A",
-    "attendance": "Present"
-})
+    tk.Label(add_students_window, text="Student Name:").pack()
+    student_name_entry = tk.Entry(add_students_window)
+    student_name_entry.pack()
 
-student_data_list.append({
-    "student_name": "Chotta Bheem", "father_name": "Raju", "mother_name": "Kunti",
-    "dob": "2004-01-01", "blood_group": "O+", "gender": "Male", "roll_no": "204", "class": "11", "section": "A",
-    "attendance": "Present"
-})
+    tk.Label(add_students_window, text="Father Name:").pack()
+    father_name_entry = tk.Entry(add_students_window)
+    father_name_entry.pack()
 
-student_data_list.append({
-    "student_name": "Tuntun Mausi", "father_name": "Unknown", "mother_name": "Unknown",
-    "dob": "1950-01-01", "blood_group": "Unknown", "gender": "Female", "roll_no": "205", "class": "11", "section": "A",
-    "attendance": "Present"
-})
+    tk.Label(add_students_window, text="Mother Name:").pack()
+    mother_name_entry = tk.Entry(add_students_window)
+    mother_name_entry.pack()
 
-student_data_list.append({
-    "student_name": "Light Yagami", "father_name": "Soichiro", "mother_name": "Sachiko",
-    "dob": "1986-02-28", "blood_group": "A-", "gender": "Male", "roll_no": "206", "class": "11", "section": "A",
-    "attendance": "Present"
-})
+    tk.Label(add_students_window, text="D.O.B:").pack()
+    dob_entry = tk.Entry(add_students_window)
+    dob_entry.pack()
+
+    tk.Label(add_students_window, text="Blood Group:").pack()
+    blood_group_entry = tk.Entry(add_students_window)
+    blood_group_entry.pack()
+
+    tk.Label(add_students_window, text="Gender:").pack()
+    gender_entry = tk.Entry(add_students_window)
+    gender_entry.pack()
+
+    tk.Label(add_students_window, text="Roll No:").pack()
+    roll_no_entry = tk.Entry(add_students_window)
+    roll_no_entry.pack()
+
+    tk.Label(add_students_window, text="Class:").pack()
+    class_entry = tk.Entry(add_students_window)
+    class_entry.pack()
+
+    tk.Label(add_students_window, text="Section:").pack()
+    section_entry = tk.Entry(add_students_window)
+    section_entry.pack()
+
+    save_button = tk.Button(add_students_window, text="Save", command=save_student_data,
+                            bg="#008000", fg="white", font=("Arial", 16))
+    save_button.pack(pady=20)
+
+# Function for Class Timetable Page
+def class_timetable_page():
+    def save_class_timetable():
+        # Implement saving class timetable
+        pass
+
+    class_timetable_window = tk.Toplevel(window)
+    class_timetable_window.title("Class Timetable")
+    class_timetable_window.geometry("800x600")
+    class_timetable_window.configure(bg=bright_bg_color)
+    class_timetable_window.grab_set()
+
+    tk.Label(class_timetable_window, text="Class Timetable", font=("Arial", 18), bg=bright_bg_color).pack(pady=10)
+
+    # ... (add widgets for class timetable, and a button to save)
+
+    save_button = tk.Button(class_timetable_window, text="Save Timetable", command=save_class_timetable,
+                            bg="#008000", fg="white", font=("Arial", 16))
+    save_button.pack(pady=20)
 
 # Start the main event loop
 window.mainloop()
