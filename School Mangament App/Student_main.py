@@ -8,18 +8,14 @@ student_window = tk.Tk()
 student_window.title("Student Profile")
 student_window.geometry("800x600")
 student_window.configure(bg="light blue")  # Set background color
-
-# Sample assignment data (you can replace this with your actual assignment data)
+# Sample assignment data 
 assignments = [
     {"name": "Assignment 1", "file_path": "assignment1.pdf"},
     {"name": "Assignment 2", "file_path": "assignment2.png"},
 ]
-
 # Function to show a "Feature coming soon" message
 def feature_coming_soon():
     messagebox.showinfo("Feature Coming Soon", "This feature is coming soon.")
-
-# Function to open a file dialog for downloading an assignment
 # Function to open a file dialog for downloading an assignment
 def download_assignment(file_path):
     save_path = filedialog.asksaveasfilename(defaultextension=".pdf", initialfile=file_path)
@@ -27,20 +23,17 @@ def download_assignment(file_path):
         # Copy the assignment file to the selected save path
         shutil.copyfile(file_path, save_path)
         messagebox.showinfo("Download Assignment", f"Downloading {os.path.basename(file_path)} to {save_path}")
-
 # Function to list assignments in the "Assignments" folder
 def list_assignments():
     assignments_folder = "Assignments"  # Folder where assignments are stored
     assignments = []
-
     if os.path.exists(assignments_folder):
         # Get a list of files in the assignments folder
         assignment_files = os.listdir(assignments_folder)
-
         for file_name in assignment_files:
             # Create a dictionary for each assignment with its name and file path
             assignment = {
-                "name": file_name,  # You can modify this to display a more user-friendly name
+                "name": file_name, 
                 "file_path": os.path.join(assignments_folder, file_name)
             }
             assignments.append(assignment)
