@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Brigade School @JP Nagar </title>
+</head>
+<body>
+    <h1>Welcome to the Teacher & Student Dashboard</h1>
+    <a href="{{ url_for('signup') }}">Sign Up</a>
+    <a href="{{ url_for('login') }}">Login</a>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcement Board</title>
+</head>
+<body>
+    <h1>Announcement Board</h1>
+    <ul>
+        {% for announcement in announcements %}
+            <li>{{ announcement }}</li>
+        {% endfor %}
+    </ul>
+    <form action="{{ url_for('make_announcement_route') }}" method="post">
+        <label for="announcement">Make an Announcement:</label>
+        <input type="text" id="announcement" name="announcement" required>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
